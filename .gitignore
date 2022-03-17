@@ -41,3 +41,9 @@
 *.tlog
 *.txt
 *.idb
+.vs/PrecisedFloat/v17/.suo
+*.db
+*.db-shm
+*.db-wal
+*.opendb
+*.ipch
