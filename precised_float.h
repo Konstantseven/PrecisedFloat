@@ -36,16 +36,16 @@ public:
     explicit PrecisedFloat(const T number);
 
 
-    PrecisedFloat& operator=(const std::string& string);
+    PrecisedFloat& operator=(const std::string& string) &;
     template<typename T,
              enable_if_arithmetic_t<T> = true>
-    PrecisedFloat& operator=(const T number);
+    PrecisedFloat& operator=(const T number) &;
 
 
-    PrecisedFloat& operator+=(const PrecisedFloat& other) noexcept;
+    PrecisedFloat& operator+=(const PrecisedFloat& other) & noexcept;
     template<typename T,
              enable_if_arithmetic_t<T> = true>
-    PrecisedFloat& operator+=(const T number) noexcept;
+    PrecisedFloat& operator+=(const T number) & noexcept;
     PrecisedFloat operator+(const PrecisedFloat& other) const noexcept;
     template<typename T,
              enable_if_arithmetic_t<T>>
@@ -55,10 +55,10 @@ public:
     friend PrecisedFloat operator+(const T number, const PrecisedFloat& p_float) noexcept;
 
 
-    PrecisedFloat& operator-=(const PrecisedFloat& other) noexcept;
+    PrecisedFloat& operator-=(const PrecisedFloat& other) & noexcept;
     template<typename T,
              enable_if_arithmetic_t<T> = true>
-    PrecisedFloat& operator-=(const T number) noexcept;
+    PrecisedFloat& operator-=(const T number) & noexcept;
     PrecisedFloat operator-(const PrecisedFloat& other) const noexcept;
     template<typename T,
              enable_if_arithmetic_t<T>>
@@ -68,10 +68,10 @@ public:
     friend PrecisedFloat operator-(const T number, const PrecisedFloat& p_float) noexcept;
 
 
-    PrecisedFloat& operator*=(const PrecisedFloat& other) noexcept;
+    PrecisedFloat& operator*=(const PrecisedFloat& other) & noexcept;
     template<typename T,
              enable_if_arithmetic_t<T> = true>
-    PrecisedFloat& operator*=(const T number) noexcept;
+    PrecisedFloat& operator*=(const T number) & noexcept;
     PrecisedFloat operator*(const PrecisedFloat& other) const noexcept;
     template<typename T,
              enable_if_arithmetic_t<T>>
@@ -81,10 +81,10 @@ public:
     friend PrecisedFloat operator*(const T number, const PrecisedFloat& p_float) noexcept;
 
 
-    PrecisedFloat& operator/=(const PrecisedFloat& other) noexcept;
+    PrecisedFloat& operator/=(const PrecisedFloat& other) & noexcept;
     template<typename T,
              enable_if_arithmetic_t<T> = true>
-    PrecisedFloat& operator/=(const T number) noexcept;
+    PrecisedFloat& operator/=(const T number) & noexcept;
     PrecisedFloat operator/(const PrecisedFloat& other) const noexcept;
     template<typename T,
              enable_if_arithmetic_t<T>>
@@ -282,7 +282,7 @@ PrecisedFloat::PrecisedFloat(const T number) {
 }
 
 
-PrecisedFloat& PrecisedFloat::operator=(const std::string& string) {
+PrecisedFloat& PrecisedFloat::operator=(const std::string& string) & {
     set_from(string);
 
     return *this;
@@ -290,14 +290,14 @@ PrecisedFloat& PrecisedFloat::operator=(const std::string& string) {
 
 template<typename T,
          PrecisedFloat::enable_if_arithmetic_t<T>>
-PrecisedFloat& PrecisedFloat::operator=(const T number) {
+PrecisedFloat& PrecisedFloat::operator=(const T number) & {
     set_from(number);
 
     return *this;
 }
 
 
-PrecisedFloat& PrecisedFloat::operator+=(const PrecisedFloat& other) noexcept {
+PrecisedFloat& PrecisedFloat::operator+=(const PrecisedFloat& other) & noexcept {
     if (other.state == State::NaN) {
         set_nan();
     } else if (state == other.state) {
@@ -311,7 +311,7 @@ PrecisedFloat& PrecisedFloat::operator+=(const PrecisedFloat& other) noexcept {
 
 template<typename T,
          PrecisedFloat::enable_if_arithmetic_t<T>>
-PrecisedFloat& PrecisedFloat::operator+=(const T number) noexcept {
+PrecisedFloat& PrecisedFloat::operator+=(const T number) & noexcept {
     return *this += PrecisedFloat{number};
 }
 
@@ -341,7 +341,7 @@ PrecisedFloat operator+(const T number, const PrecisedFloat& p_float) noexcept {
 }
 
 
-PrecisedFloat& PrecisedFloat::operator-=(const PrecisedFloat& other) noexcept {
+PrecisedFloat& PrecisedFloat::operator-=(const PrecisedFloat& other) & noexcept {
     if (other.state == State::NaN) {
         set_nan();
     } else if (state == other.state) {
@@ -355,7 +355,7 @@ PrecisedFloat& PrecisedFloat::operator-=(const PrecisedFloat& other) noexcept {
 
 template<typename T,
          PrecisedFloat::enable_if_arithmetic_t<T>>
-PrecisedFloat& PrecisedFloat::operator-=(const T number) noexcept {
+PrecisedFloat& PrecisedFloat::operator-=(const T number) & noexcept {
     return *this -= PrecisedFloat{number};
 }
 
@@ -385,7 +385,7 @@ PrecisedFloat operator-(const T number, const PrecisedFloat& p_float) noexcept {
 }
 
 
-PrecisedFloat& PrecisedFloat::operator*=(const PrecisedFloat& other) noexcept {
+PrecisedFloat& PrecisedFloat::operator*=(const PrecisedFloat& other) & noexcept {
     if (other.state == State::NaN) {
         set_nan();
         return *this;
@@ -405,7 +405,7 @@ PrecisedFloat& PrecisedFloat::operator*=(const PrecisedFloat& other) noexcept {
 
 template<typename T,
          PrecisedFloat::enable_if_arithmetic_t<T>>
-PrecisedFloat& PrecisedFloat::operator*=(const T number) noexcept {
+PrecisedFloat& PrecisedFloat::operator*=(const T number) & noexcept {
     return *this *= PrecisedFloat{number};
 }
 
@@ -435,7 +435,7 @@ PrecisedFloat operator*(const T number, const PrecisedFloat& p_float) noexcept {
 }
 
 
-PrecisedFloat& PrecisedFloat::operator/=(const PrecisedFloat& other) noexcept {
+PrecisedFloat& PrecisedFloat::operator/=(const PrecisedFloat& other) & noexcept {
     if (state == State::NaN || mantissa == 0) {
         return *this;
     } else if (other.state == State::NaN || other.mantissa == 0) {
@@ -480,7 +480,7 @@ PrecisedFloat& PrecisedFloat::operator/=(const PrecisedFloat& other) noexcept {
 
 template<typename T,
          PrecisedFloat::enable_if_arithmetic_t<T>>
-PrecisedFloat & PrecisedFloat::operator/=(const T number) noexcept {
+PrecisedFloat& PrecisedFloat::operator/=(const T number) & noexcept {
     return *this /= PrecisedFloat{number};
 }
 
@@ -808,6 +808,11 @@ bool PrecisedFloat::is_nan() const noexcept {
 }
 
 void PrecisedFloat::set_from(const std::string& string) {
+    if (string.empty()) {
+        set_nan();
+        return;
+    }
+
     auto iterator = string.cbegin();
 
     if (*iterator == MINUS_CHAR) {

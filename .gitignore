@@ -41,9 +41,12 @@
 *.tlog
 *.txt
 *.idb
-.vs/PrecisedFloat/v17/.suo
-*.db
-*.db-shm
-*.db-wal
-*.opendb
-*.ipch
+
+#Visual Studio
+.vs/
+
+# Google Tests
+packages/*
+TestResults/*
+UTests/packages.config
+*.testdurations
