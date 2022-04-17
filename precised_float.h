@@ -389,11 +389,9 @@ PrecisedFloat& PrecisedFloat::operator*=(const PrecisedFloat& other) & noexcept 
     if (other.state == State::NaN) {
         set_nan();
         return *this;
-    }
-    else if (state == State::NaN) {
+    } else if (state == State::NaN) {
         return *this;
-    }
-    else if (other.state == State::NEGATIVE) {
+    } else if (other.state == State::NEGATIVE) {
         switch_sign();
     }
 
@@ -630,7 +628,7 @@ PrecisedFloat::operator T() const noexcept {
 template<typename T,
          PrecisedFloat::enable_if_integer_t<T>>
 void PrecisedFloat::set_from(const T integer) noexcept {
-    mantissa = integer;
+    mantissa = static_cast<PrecisedFloat::mantissa_t>(std::abs(integer));
     state = integer < 0 ? State::NEGATIVE : State::POSITIVE;
     magnitude_order = 0;
 }
@@ -696,7 +694,7 @@ void PrecisedFloat::make_addition(const PrecisedFloat& p_float) noexcept {
 }
 
 void PrecisedFloat::make_subtraction(const PrecisedFloat& p_float) noexcept {
-    const auto compare_mantissas_and_process = [this] (const mantissa_t p_float_mantissa) {
+    const auto compare_and_process = [this] (const mantissa_t p_float_mantissa) {
         if (mantissa < p_float_mantissa) {
             switch_sign();
             return p_float_mantissa - mantissa;
@@ -706,7 +704,7 @@ void PrecisedFloat::make_subtraction(const PrecisedFloat& p_float) noexcept {
     };
 
     if (magnitude_order == p_float.magnitude_order) {
-        mantissa = compare_mantissas_and_process(p_float.mantissa);
+        mantissa = compare_and_process(p_float.mantissa);
 
         return;
     }
@@ -717,11 +715,11 @@ void PrecisedFloat::make_subtraction(const PrecisedFloat& p_float) noexcept {
         magnitude_order = p_float.magnitude_order;
         mantissa *= mantissa_shift;
 
-        mantissa = compare_mantissas_and_process(p_float.mantissa);
+        mantissa = compare_and_process(p_float.mantissa);
     } else {
         const auto p_float_mantissa = p_float.mantissa * mantissa_shift;
 
-        mantissa = compare_mantissas_and_process(p_float_mantissa);
+        mantissa = compare_and_process(p_float_mantissa);
     }
 }
 
@@ -818,11 +816,10 @@ void PrecisedFloat::set_from(const std::string& string) {
     if (*iterator == MINUS_CHAR) {
         state = State::NEGATIVE;
         ++iterator;
-    }
-    else if (std::isdigit(*iterator)) {
+    } else if (std::isdigit(*iterator)) {
         state = State::POSITIVE;
-    }
-    else {
+    } else {
+        set_nan();
         return;
     }
 
@@ -835,13 +832,21 @@ void PrecisedFloat::set_from(const std::string& string) {
         return trailing_zeros;
     };
 
+    const auto trailing_zeros_count = count_trailing_zeros(string);
+
+    // String representation of floating point number should fit into <mantissa_t> type
+    if (string.size() - trailing_zeros_count - (state == State::NEGATIVE ? /* minus character and dot */ 2 : /* dot only */ 1) > std::numeric_limits<PrecisedFloat::mantissa_t>::digits10) {
+        set_nan();
+        return;
+    }
+
     bool dot_found = false;
-    const auto end_without_zeros = string.cend() - count_trailing_zeros(string);
+    const auto end_without_zeros = string.cend() - trailing_zeros_count;
     for (; iterator < end_without_zeros; ++iterator) {
         if (*iterator == DOT_CHAR) {
-            if (dot_found || iterator + 1 == end_without_zeros) { // problematic case 0.0000000
+            if (dot_found || iterator + 1 == end_without_zeros) {
                 set_nan();
-                break;
+                return;
             }
             dot_found = true;
             continue;
@@ -853,7 +858,7 @@ void PrecisedFloat::set_from(const std::string& string) {
 
         if (!std::isdigit(*iterator)) {
             set_nan();
-            break;
+            return;
         }
 
         mantissa = mantissa * std::numeric_limits<PrecisedFloat>::radix + char_to_int(*iterator);

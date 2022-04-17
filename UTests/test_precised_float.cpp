@@ -56,6 +56,109 @@ TEST(TestInitialization, TestInitializationFromString) {
 
     for (const auto& test_case : test_cases) {
         PrecisedFloat pf{test_case.str};
-        EXPECT_EQ(pf.str(), test_case.expected);`
+        EXPECT_EQ(pf.str(), test_case.expected);
+    }
+}
+
+template<typename T>
+struct NumberTestCase {
+    using number_t = typename T;
+    number_t    number;
+    std::string expected;
+};
+
+TEST(TestInitialization, TestInitializationFromInteger) {
+    using IntegerTestCase = NumberTestCase<long long int>;
+    std::vector<IntegerTestCase> test_cases{
+        {0,                                                     "0.0"},
+        {1,                                                     "1.0"},
+        {-1,                                                    "-1.0"},
+        {std::numeric_limits<IntegerTestCase::number_t>::max(), "9223372036854775807.0"},
+        {std::numeric_limits<IntegerTestCase::number_t>::min(), "-9223372036854775808.0"},
+    };
+
+    for (const auto& test_case : test_cases) {
+        PrecisedFloat pf{test_case.number};
+        EXPECT_EQ(pf.str(), test_case.expected);
+    }
+}
+
+TEST(TestInitialization, TestInitializationFromFloatingPoint) {
+    using DoubleTestCase = NumberTestCase<double>;
+    std::vector<DoubleTestCase> double_test_cases{
+        {0.0,      "0.0"},
+        {0.1,      "0.1"},
+        {0.01,     "0.01"},
+        {0.001,    "0.001"},
+        {0.0001,   "0.0001"},
+        {0.00001,  "0.00001"},
+        {0.000001, "0.000001"},
+        {0.000012, "0.000012"},
+        {0.000123, "0.000123"},
+        {0.001234, "0.001234"},
+        {0.012345, "0.012345"},
+        {0.123456, "0.123456"},
+        {0.12345,  "0.12345"},
+        {0.1234,   "0.1234"},
+        {0.123,    "0.123"},
+        {0.12,     "0.12"},
+
+        {-0.0,      "-0.0"},
+        {-0.1,      "-0.1"},
+        {-0.01,     "-0.01"},
+        {-0.001,    "-0.001"},
+        {-0.0001,   "-0.0001"},
+        {-0.00001,  "-0.00001"},
+        {-0.000001, "-0.000001"},
+        {-0.000012, "-0.000012"},
+        {-0.000123, "-0.000123"},
+        {-0.001234, "-0.001234"},
+        {-0.012345, "-0.012345"},
+        {-0.123456, "-0.123456"},
+        {-0.12345,  "-0.12345"},
+        {-0.1234,   "-0.1234"},
+        {-0.123,    "-0.123"},
+        {-0.12,     "-0.12"},
+
+        {1.0,      "1.0"},
+        {1.1,      "1.1"},
+        {1.01,     "1.01"},
+        {1.001,    "1.001"},
+        {1.0001,   "1.0001"},
+        {1.00001,  "1.00001"},
+        {1.000001, "1.000001"},
+        {1.000012, "1.000012"},
+        {1.000123, "1.000123"},
+        {1.001234, "1.001234"},
+        {1.012345, "1.012345"},
+        {1.123456, "1.123456"},
+        {1.12345,  "1.12345"},
+        {1.1234,   "1.1234"},
+        {1.123,    "1.123"},
+        {1.12,     "1.12"},
+
+        {-1.0,      "-1.0"},
+        {-1.1,      "-1.1"},
+        {-1.01,     "-1.01"},
+        {-1.001,    "-1.001"},
+        {-1.0001,   "-1.0001"},
+        {-1.00001,  "-1.00001"},
+        {-1.000001, "-1.000001"},
+        {-1.000012, "-1.000012"},
+        {-1.000123, "-1.000123"},
+        {-1.001234, "-1.001234"},
+        {-1.012345, "-1.012345"},
+        {-1.123456, "-1.123456"},
+        {-1.12345,  "-1.12345"},
+        {-1.1234,   "-1.1234"},
+        {-1.123,    "-1.123"},
+        {-1.12,     "-1.12"},
+
+        {std::numeric_limits<DoubleTestCase::number_t>::max(), "NaN"} // too big number to be stored
+    };
+
+    for (const auto& test_case : double_test_cases) {
+        PrecisedFloat pf{test_case.number};
+        EXPECT_EQ(pf.str(), test_case.expected);
     }
 }
